@@ -1,0 +1,4 @@
+intégrer le secret dans la textbox directement dans la query vers PWPush
+-mettre un script qui permet de créer le credentiel.json 
+-convertir le tout en .exe ou je sais pas quel executable qui marche bien
+-voir pour créer un certificat virtuel pour le code histoire de pas avoir de soucis avec le domaine ?

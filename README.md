@@ -1,2 +1,8 @@
-# pwpush_teams-and-outlook-integration
-il s'agit d'un GUI de password pusher écrit en powershell avec des intégrations teams et outlook (en cours d'ajout) permettant de transférer du plaintext grâce à un lien généré.
+# PWpush GUI
+
+## tuto de lancement
+
+- avoir au moins powershell 5.1 (idéalement installer powershell 7)
+- créer un compte password pusher sur eu.pwpush.com
+- générer sa clé API depuis le site
+- insérer son mail et sa clé API dans l'executable *executable-en-question* qui le convertit en fichier de crédentiel json

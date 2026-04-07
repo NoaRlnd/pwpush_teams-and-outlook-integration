@@ -1,9 +1,10 @@
-$compteurJsonPath = Join-Path $basePath "\data\compteur.json"
-$compteur = Get-Content -Raw -Path $compteurJsonPath | ConvertFrom-Json
+Write-Host "-----------------------------------"
+$txtSecret.Text = "ceci est un secret"
+$currentPath = $PSScriptRoot
+$basePath = Split-Path -Path $PSScriptRoot
+$mainPath = Join-Path $currentPath "\main.ps1"
+$secretJSONpath = Join-Path $basePath "\data\secret.json"
 
-if ($compteur.compteur = "False") {
-    Write-Host "fonctionnel"
-}
-else {
-    Write-Host "non-fonctionnel"
-}
+$txtSecret.Text | ConvertTo-Json | Set-Content -Encoding utf8 -Path $secretJSONpath
+$payload = Get-Content -Raw -Path $secretJSONpath | ConvertFrom-Json
+Write-Host $payload

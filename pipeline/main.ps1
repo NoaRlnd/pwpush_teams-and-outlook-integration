@@ -1,3 +1,4 @@
+#spaghetti code incoming, désolé :)
 Add-Type -AssemblyName System.Windows.Forms
 Add-Type -AssemblyName System.Drawing
 
@@ -5,6 +6,7 @@ $currentPath = $PSScriptRoot
 $basePath = Split-Path -Path $PSScriptRoot
 $dataJSONpath = Join-Path $basePath "\data\data.json"
 $testDataJSONpath = Join-Path $basePath "\data\testdata.json"
+$secretJSONpath = Join-Path $basePath "\data\secret.json"
 $visuelsPath = Join-Path $basePath "\visuels"
 $visuelsBGpath = Join-Path $visuelsPath "\arriere_plan_main.png"
 $visuelsCHMKpath = Join-Path $visuelsPath "\checkmark.png"
@@ -20,7 +22,7 @@ $Form.Size = New-Object System.Drawing.Size(500, 460)
 $Form.StartPosition = "CenterScreen"
 $Form.BackgroundImage = [System.Drawing.Image]::FromFile($visuelsBGpath)
 
-# truc de timer, personne sait comment ça marche
+# truc de timer, absolument ignoble à comprendre, mais mieux que start-sleep pour pas bloquer l'UI
 $timer = New-Object System.Windows.Forms.Timer
 $timer.Interval = 60000  # 60 secondes
 
@@ -89,7 +91,7 @@ $Form.Controls.Add($btnGenerate)
 # zone résultat
 $txtResult = New-Object System.Windows.Forms.TextBox
 $txtResult.Text = ""
-$txtResult.PlaceholderText = "1 minute entre chaque demandes de liens, svp"
+$txtResult.PlaceholderText = "1 minute entre chaque demandes de liens, par pitié"
 $txtResult.Location = New-Object System.Drawing.Point(10,350)
 $txtResult.Size = New-Object System.Drawing.Size(450,20)
 $txtResult.ReadOnly = $true
@@ -112,6 +114,7 @@ $Form.Controls.Add($btnchkmark)
 # logique trigger du timer
 $timer.Add_Tick({
     $btnGenerate.Enabled = $true
+    $txtSecret.Enabled = $true
     $timer.Stop()
 })
 
@@ -139,6 +142,8 @@ $btnCopy.Add_Click({
 #logique du bouton générer
 $btnGenerate.Add_Click({
     $btnGenerate.Enabled = $false
+    $txtSecret.Enabled = $false
+    $txtSecret.Text | ConvertTo-Json | Set-Content -Encoding utf8 -Path $secretJSONpath
     $compteur = Get-Content -Raw -Path $compteurJsonPath | ConvertFrom-Json
     if ($compteur.compteur -eq $false) {
             if ($txtResult.Text -eq "") {

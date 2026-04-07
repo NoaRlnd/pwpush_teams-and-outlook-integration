@@ -1,8 +1,11 @@
-$vuesMax = 1
-$joursMax = 1
-
+$currentPath = $PSScriptRoot
 $basePath = Split-Path -Path $PSScriptRoot
 $credentielJSONpath = Join-Path $basePath "\credentiel.json"
+$secretJSONpath = Join-Path $basePath "\data\secret.json"
+
+$payload = Get-Content -Raw -Path $secretJSONpath | ConvertFrom-Json
+$vuesMax = 1
+$joursMax = 1
 
 $contentCredJSON = Get-Content -Raw -Path $credentielJSONpath | ConvertFrom-Json
 $mail = $contentCredJSON.mail
@@ -15,7 +18,7 @@ $headers = @{
 }
 
 $body = @{
-    'password[payload]' = 'jaime bien les sapin'
+    'password[payload]' = $payload
     'password[note]' = 'si ça marche c le feu'
     'password[expire_after_views]' = $vuesMax
     'password[expire_after_days]' = $joursMax
