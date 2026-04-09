@@ -10,7 +10,11 @@ $secretJSONpath = Join-Path $basePath "\data\secret.json"
 $visuelsPath = Join-Path $basePath "\visuels"
 $visuelsBGpath = Join-Path $visuelsPath "\arriere_plan_main.png"
 $visuelsCHMKpath = Join-Path $visuelsPath "\checkmark.png"
+$visuelsSTTGSpath = Join-Path $visuelsPath "\settings.png"
 $pushPath = Join-Path $currentPath "\push.ps1"
+$mailPagePath = Join-Path $currentPath "\MailPage.ps1"
+$teamsPagePath = Join-Path $currentPath "\TeamsPage.ps1"
+$settingsPagePath = Join-Path $currentPath "\SettingsPage.ps1"
 $compteurJsonPath = Join-Path $basePath "\data\compteur.json"
 
 
@@ -30,8 +34,15 @@ $timer.Interval = 60000  # 60 secondes
 $lblSecret = New-Object System.Windows.Forms.Label
 $lblSecret.Text = "Secret à envoyer :"
 $lblSecret.Location = New-Object System.Drawing.Point(10,20)
-$lblSecret.Size = New-Object System.Drawing.Size(150,20)
+$lblSecret.Size = New-Object System.Drawing.Size(105,20)
 $Form.Controls.Add($lblSecret)
+
+# bouton paramètres
+$btnSettings = New-Object System.Windows.Forms.Button
+$btnSettings.Location = New-Object System.Drawing.Point(130,15)
+$btnSettings.Size = New-Object System.Drawing.Size(30,30)
+$btnSettings.Image = [System.Drawing.Image]::FromFile($visuelsSTTGSpath)
+$Form.Controls.Add($btnSettings)
 
 # textbox Secret
 $txtSecret = New-Object System.Windows.Forms.TextBox
@@ -41,45 +52,32 @@ $Form.Controls.Add($txtSecret)
 
 # checkbox Teams
 $chkTeams = New-Object System.Windows.Forms.CheckBox
-$chkTeams.Text = "Envoyer sur Teams"
+$chkTeams.Text = "Envoi par Teams"
 $chkTeams.Location = New-Object System.Drawing.Point(10,90)
 $chkTeams.Size = New-Object System.Drawing.Size(130,20)
-
 $Form.Controls.Add($chkTeams)
 
-# Label Webhook
-$lblWebhook = New-Object System.Windows.Forms.Label
-$lblWebhook.Text = "Webhook Teams :"
-$lblWebhook.Location = New-Object System.Drawing.Point(10,120)
-$lblWebhook.Size = New-Object System.Drawing.Size(150,20)
-$Form.Controls.Add($lblWebhook)
-
-# Textbox Webhook
-$txtWebhook = New-Object System.Windows.Forms.TextBox
-$txtWebhook.Location = New-Object System.Drawing.Point(10,150)
-$txtWebhook.Size = New-Object System.Drawing.Size(450,20)
-$txtWebhook.Enabled = $false
-$Form.Controls.Add($txtWebhook)
+# bouton teams
+$btnTeams = New-Object System.Windows.Forms.Button
+$btnTeams.Text = "Configurer l'envoi par Teams"
+$btnTeams.Location = New-Object System.Drawing.Point(10,120)
+$btnTeams.Size = New-Object System.Drawing.Size(175,25)
+$btnTeams.Enabled = $false
+$Form.Controls.Add($btnTeams)
 
 # checkbox Mail
 $chkMail = New-Object System.Windows.Forms.CheckBox
-$chkMail.Text = "Envoi mail"
-$chkMail.Location = New-Object System.Drawing.Point(10,190)
+$chkMail.Text = "Envoi par mail"
+$chkMail.Location = New-Object System.Drawing.Point(10,160)
 $Form.Controls.Add($chkMail)
 
-# Label Email
-$lblMail = New-Object System.Windows.Forms.Label
-$lblMail.Text = "Adresse email :"
-$lblMail.Location = New-Object System.Drawing.Point(10,220)
-$lblMail.Size = New-Object System.Drawing.Size(90,20)
-$Form.Controls.Add($lblMail)
-
-#textbox Email
-$txtMail = New-Object System.Windows.Forms.TextBox
-$txtMail.Location = New-Object System.Drawing.Point(10,250)
-$txtMail.Size = New-Object System.Drawing.Size(450,20)
-$txtMail.Enabled = $false
-$Form.Controls.Add($txtMail)
+# bouton mail
+$btnMail = New-Object System.Windows.Forms.Button
+$btnMail.Text = "Configurer l'envoi par email"
+$btnMail.Location = New-Object System.Drawing.Point(10,190)
+$btnMail.Size = New-Object System.Drawing.Size(175,25)
+$btnMail.Enabled = $false
+$Form.Controls.Add($btnMail)
 
 # bouton Générer
 $btnGenerate = New-Object System.Windows.Forms.Button
@@ -118,25 +116,28 @@ $timer.Add_Tick({
     $timer.Stop()
 })
 
-# enable/Disable logique
+# enable/disable logique
 $chkTeams.Add_CheckedChanged({
-    $txtWebhook.Enabled = $chkTeams.Checked
+    $btnTeams.Enabled = $chkTeams.Checked
 })
 
 $chkMail.Add_CheckedChanged({
-    $txtMail.Enabled = $chkMail.Checked
+    $btnMail.Enabled = $chkMail.Checked
 })
 
-# logique de la checkmark du bouton copier
-$btnCopy.Add_Click({
-    if ($txtResult.Text -ne "") {
-        [System.Windows.Forms.Clipboard]::SetText($txtResult.Text)
-        $btnchkmark.Enabled = $true
-        $btnchkmark.Image = [System.Drawing.Image]::FromFile($visuelsCHMKpath)
-        Start-Sleep -Seconds 1.5
-        $btnchkmark.Image = $null
-        $btnchkmark.Enabled = $false
-    }
+# logique du bouton paramètres
+$btnSettings.Add_Click({
+    & $settingsPagePath
+})
+
+# logique bouton teams
+$btnTeams.Add_Click({
+    & $mailPagePath
+})
+
+# Logique bouton Mail
+$btnMail.Add_Click({
+    & $teamsPagePath
 })
 
 #logique du bouton générer
@@ -164,7 +165,17 @@ $btnGenerate.Add_Click({
     $timer.Start()
 })
 
-
+# logique de la checkmark du bouton copier
+$btnCopy.Add_Click({
+    if ($txtResult.Text -ne "") {
+        [System.Windows.Forms.Clipboard]::SetText($txtResult.Text)
+        $btnchkmark.Enabled = $true
+        $btnchkmark.Image = [System.Drawing.Image]::FromFile($visuelsCHMKpath)
+        Start-Sleep -Seconds 1.5
+        $btnchkmark.Image = $null
+        $btnchkmark.Enabled = $false
+    }
+})
 
 
 

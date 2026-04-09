@@ -3,3 +3,22 @@ ce site pour le format md : (https://markdownguide.offshoot.io/basic-syntax/),
 akril.net pour le tuto windows form de qualité (les autres sont nuls) (https://akril.net/creer-une-windows-form-en-powershell/)
 
 Install-Module -Name "Send-MailKitMessage"
+
+le "expire_after_days" va de 0 à jsp, avec 0 étant 0 jours
+le "expire_after_duration" va de 0 à 5, avec 0 = 15min, 1 = 30min... 5 = 12h
+le "passphrase" est soit "null" (mais sans les guillemets) soit "x" (avec les guillemets)
+
+dans l'ui il doit y avoir au total, répartis dans toutes les pages :
+-commentaires (éventuellement)
+-vues
+-jours
+-minutes/heures (si je capte enfin comment ça marche)
+-passphrase (si j'ai envie de me faire chier)
+-mail récepteur
+-mail emmeteur
+
+dans l'UI des paramètres :
+-vues
+-jours 
+-minutes/heures
+-passphrase

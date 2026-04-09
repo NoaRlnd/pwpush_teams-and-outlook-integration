@@ -8,14 +8,14 @@ $SMTPServer = "smtp-mail.outlook.com"
 $SMTPPort = 587
 
 # SMTP : Expéditeur
-$SMTPSender = [MimeKit.MailboxAddress]"nrolland@smb-horlogerie.com"
+$SMTPSender = [MimeKit.MailboxAddress]"[mail en question]"
 
 # SMTP : Destinataire(s)
 $SMTPRecipientList = [MimeKit.InternetAddressList]::new()
-$SMTPRecipientList.Add([MimeKit.InternetAddress]"nrolland@smb-horlogerie.com")
+$SMTPRecipientList.Add([MimeKit.InternetAddress]"[mail en question]")
 
 # SMTP : Identifiants
-$SMTPCreds = Get-Credential -UserName "nrolland@smb-horlogerie.com" -Message "Veuillez saisir le mot de Passe"
+$SMTPCreds = Get-Credential -UserName "[mail en question]" -Message "Veuillez saisir le mot de Passe"
 
 # E-mail : objet
 $EmailSubject = "E-mail envoyé avec Send-MailKitMessage"

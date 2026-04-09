@@ -12,7 +12,7 @@ Write-Host "-------------------------------"
 $basePath = Get-Location
 $credentielJSONpath = Join-Path $basePath "\credentiel.json"
 
-$contentCredJSON = Get-Content -Raw -Path $credentielJSONpath |ConvertFrom-Json
+$contentCredJSON = Get-Content -Raw -Path $credentielJSONpath | ConvertFrom-Json
 $mail = '"'+$contentCredJSON.mail+'"'
 $token = '"'+$contentCredJSON.APItoken+'"'
 

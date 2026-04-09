@@ -4,6 +4,7 @@ $credentielJSONpath = Join-Path $basePath "\credentiel.json"
 $secretJSONpath = Join-Path $basePath "\data\secret.json"
 
 $payload = Get-Content -Raw -Path $secretJSONpath | ConvertFrom-Json
+Set-Content -Path $secretJSONpath -Value "" -Encoding UTF8
 $vuesMax = 1
 $joursMax = 1
 
