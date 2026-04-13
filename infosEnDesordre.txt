@@ -6,7 +6,14 @@ Install-Module -Name "Send-MailKitMessage"
 
 le "expire_after_days" va de 0 à jsp, avec 0 étant 0 jours
 le "expire_after_duration" va de 0 à 5, avec 0 = 15min, 1 = 30min... 5 = 12h
+le "expire_after_duration" augmente avec le "expire_after_days" CAD si "expire_after_days" = 2 alors "expire_after_duration" = 5 + 2 donc 7
 le "passphrase" est soit "null" (mais sans les guillemets) soit "x" (avec les guillemets)
+
+la passphrase se met dans l'URI, donc pas dans le body, ni dans l'header
+pour une publication expirée, ET sans passphrase --> "passphrase": null
+pour une publication non-expirée, ET sans passphrase --> "passphrase": ""
+
+le payload (secret) apparait dans les requettes GET quand c pas expiré 
 
 dans l'ui il doit y avoir au total, répartis dans toutes les pages :
 -commentaires (éventuellement)

@@ -17,6 +17,9 @@ $teamsPagePath = Join-Path $currentPath "\TeamsPage.ps1"
 $settingsPagePath = Join-Path $currentPath "\SettingsPage.ps1"
 $compteurJsonPath = Join-Path $basePath "\data\compteur.json"
 
+$contentJSON = Get-Content -Raw -Path $dataJSONpath | ConvertFrom-Json
+$contentJSON.passphrase = ""
+$contentJSON | ConvertTo-Json | Set-Content -Encoding utf8 -Path $dataJSONpath
 
 $Form = New-Object System.Windows.Forms.Form
 $Form.FormBorderStyle = "FixedDialog"
@@ -121,6 +124,7 @@ $chkTeams.Add_CheckedChanged({
     $btnTeams.Enabled = $chkTeams.Checked
 })
 
+#pareil
 $chkMail.Add_CheckedChanged({
     $btnMail.Enabled = $chkMail.Checked
 })
@@ -145,22 +149,16 @@ $btnGenerate.Add_Click({
     $btnGenerate.Enabled = $false
     $txtSecret.Enabled = $false
     $txtSecret.Text | ConvertTo-Json | Set-Content -Encoding utf8 -Path $secretJSONpath
-    $compteur = Get-Content -Raw -Path $compteurJsonPath | ConvertFrom-Json
-    if ($compteur.compteur -eq $false) {
-            if ($txtResult.Text -eq "") {
-                & $pushPath
-                $lien = Get-Content -Raw -Path $dataJSONpath | ConvertFrom-Json
-                $txtResult.Text = $lien.html_url
-            }
-            else {
-                $txtResult.Text = ""
-                & $pushPath
-                $lien = Get-Content -Raw -Path $dataJSONpath | ConvertFrom-Json
-                $txtResult.Text = $lien.html_url
-            }
+    if ($txtResult.Text -eq "") {
+        & $pushPath
+        $lien = Get-Content -Raw -Path $dataJSONpath | ConvertFrom-Json
+        $txtResult.Text = $lien.html_url
     }
     else {
-        [System.Windows.Forms.MessageBox]::Show("veuillez laisser un écart d'une minute entre les générations de liens")
+        $txtResult.Text = ""
+        & $pushPath
+        $lien = Get-Content -Raw -Path $dataJSONpath | ConvertFrom-Json
+        $txtResult.Text = $lien.html_url
     }
     $timer.Start()
 })

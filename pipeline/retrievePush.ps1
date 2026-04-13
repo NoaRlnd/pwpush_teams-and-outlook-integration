@@ -1,4 +1,6 @@
-$pushId = "ythk7uhwvdcbouqqoe4"
-#ajoute le passphrase "fresh" dans la query du dessous
-$response = Invoke-RestMethod -Uri "https://pwpush.com/p/$pushId.json?passphrase=fresh" -Method Get
+$pushId = "xis3whoftl1yhq"
+$contentPassphrase = ""
+if ($contentPassphrase -ne "") {$passphrase = "?passphrase=" + $contentPassphrase } else {$passphrase = "" }
+
+$response = Invoke-RestMethod -Uri "https://pwpush.com/p/$pushId.json$passphrase" -Method Get
 $response | ConvertTo-Json | Set-Content -Encoding utf8 -Path $dataJSONpath

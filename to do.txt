@@ -1,8 +1,10 @@
 -intégrer le secret dans la textbox directement dans la query vers PWPush                                   // FAIT
 -développer un UI pour le script/module sendMail.ps1                                                        // fait par défaut ??
+-intégrer une page de parametres                                                                            // FAIT
 -compléter l'intégration outlook
 -compléter l'intégration teams
 -mettre un script qui permet de créer le credentiel.json et l'autre json pour la fonction sendMail
+-foutre des barre de progression en pop-up partout pour éviter le spam click
 -changer le ciel de l'image de background du mail (copyright j'imagine)
 -dans la page d'options rajouter une logique de validation qui débloque le bouton quand il y a eu au moins une modif des paramètres
 -convertir le tout en .exe ou je sais pas quel executable qui marche bien

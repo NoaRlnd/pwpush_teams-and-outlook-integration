@@ -2,28 +2,35 @@ $currentPath = $PSScriptRoot
 $basePath = Split-Path -Path $PSScriptRoot
 $credentielJSONpath = Join-Path $basePath "\credentiel.json"
 $secretJSONpath = Join-Path $basePath "\data\secret.json"
+$dataJSONpath = Join-Path $basePath "\data\data.json"
+
 
 $payload = Get-Content -Raw -Path $secretJSONpath | ConvertFrom-Json
-Set-Content -Path $secretJSONpath -Value "" -Encoding UTF8
-$vuesMax = 1
-$joursMax = 1
+
+$contentJSONdata = Get-Content -Raw -Path $dataJSONpath | ConvertFrom-Json
+$vuesMax = $contentJSONdata.expire_after_views
+if ($contentJSONdata.passphrase -eq "") {$passphrase = $null} else {$passphrase = $contentJSONdata.passphrase}
+$duree = $contentJSONdata.expire_after_duration
 
 $contentCredJSON = Get-Content -Raw -Path $credentielJSONpath | ConvertFrom-Json
-$mail = $contentCredJSON.mail
-$token = $contentCredJSON.APItoken
+$token = $contentCredJSON
 
 
 $headers = @{
-    'X-User-Email' = $mail
-    'X-User-Token' = $token
+    'Authorization' = "Bearer $token"
+    'Content-Type' = "application/json"
 }
 
 $body = @{
-    'password[payload]' = $payload
-    'password[note]' = 'si ça marche c le feu'
-    'password[expire_after_views]' = $vuesMax
-    'password[expire_after_days]' = $joursMax
-}
+    push = @{
+        payload = $payload
+        expire_after_duration = $duree
+        expire_after_views = $vuesMax
+        passphrase = $passphrase
+        note = "envoi depuis application PWPush"
+    }
+} | ConvertTo-Json -Depth 10
 
-$response = Invoke-RestMethod -Uri 'https://pwpush.com/p.json' -Method Post -Headers $headers -Body $body
+$response = Invoke-RestMethod -Uri 'https://eu.pwpush.com/api/v2/pushes' -Method Post -Headers $headers -Body $body
+
 $response | ConvertTo-Json | Set-Content -Encoding utf8 -Path $dataJSONpath

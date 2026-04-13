@@ -5,6 +5,23 @@ $currentPath = $PSScriptRoot
 $basePath = Split-Path -Path $PSScriptRoot
 $dataJSONpath = Join-Path $basePath "\data\data.json"
 
+$contentData = Get-Content -Raw -Path $dataJSONpath | ConvertFrom-Json
+
+$lblValuesTab = @(
+    '15 minutes'
+    '30 minutes'
+    '45 minutes'
+    '1 heure'
+    '6 heures'
+    '12 heures'
+    '1 jour'
+    '2 jours'
+    '3 jours'
+    '4 jours'
+    '5 jours'
+    '6 jours'
+)
+
 $Form = New-Object System.Windows.Forms.Form
 $Form.FormBorderStyle = "FixedDialog"
 $Form.MaximizeBox = $false
@@ -14,9 +31,10 @@ $Form.StartPosition = "CenterParent"
 
 # checkbox passphrase
 $chkPassphrase = New-Object System.Windows.Forms.CheckBox
-$chkPassphrase.Text = "Envoi par Teams"
+$chkPassphrase.Text = "Ajout d'une passphrase"
 $chkPassphrase.Location = New-Object System.Drawing.Point(10,20)
-$chkPassphrase.Size = New-Object System.Drawing.Size(130,20)
+$chkPassphrase.Size = New-Object System.Drawing.Size(180,20)
+$chkPassphrase.Checked = if ($contentData.passphrase -ne "") {$true} else {$false}
 $Form.Controls.Add($chkPassphrase)
 
 # label Passphrase
@@ -30,14 +48,15 @@ $Form.Controls.Add($lblPassphrase)
 $txtPassphrase = New-Object System.Windows.Forms.TextBox
 $txtPassphrase.Location = New-Object System.Drawing.Point(10,80)
 $txtPassphrase.Size = New-Object System.Drawing.Size(390,20)
-$txtPassphrase.Enabled = $false
+$txtPassphrase.Text = $contentData.passphrase
+$txtPassphrase.Enabled = if ($contentData.passphrase -ne "") {$true} else {$false}
 $Form.Controls.Add($txtPassphrase)
 
 # label Vues
 $lblVues = New-Object System.Windows.Forms.Label
-$lblVues.Text = "limite de vue (par défaut 1)"
+$lblVues.Text = $contentData.expire_after_views.ToString() + " vues avant expiration (par défaut 1)"
 $lblVues.Location = New-Object System.Drawing.Point(10,110)
-$lblVues.Size = New-Object System.Drawing.Size(160,30)
+$lblVues.Size = New-Object System.Drawing.Size(270,30)
 $Form.Controls.Add($lblVues)
 
 # trackbar limite de vues
@@ -46,31 +65,31 @@ $tbVues.Location = New-Object System.Drawing.Point(10,150)
 $tbVues.Size = New-Object System.Drawing.Size(320, 45)
 $tbVues.Maximum = 100
 $tbVues.Minimum = 1
-$tbVues.Value = 1
+$tbVues.Value = $contentData.expire_after_views
 $tbVues.TickFrequency = 10
 $Form.Controls.Add($tbVues)
 
-# label Jours
-$lblJours = New-Object System.Windows.Forms
-$lblJours.Text = "limite de jours (par défaut 1)"
-$lblJours.Location = New-Object System.Drawing.Point(10,200)
-$lblJours.Size = New-Object System.Drawing.Size(160,30)
-$Form.Controls.Add($lblJours)
+# label temps
+$lblTime = New-Object System.Windows.Forms.Label
+$lblTime.Text = "Expiration du lien (par défaut 15 min) : " + $lblValuesTab[$contentData.expire_after_duration]
+$lblTime.Location = New-Object System.Drawing.Point(10,200)
+$lblTime.Size = New-Object System.Drawing.Size(270,30)
+$Form.Controls.Add($lblTime)
 
-# trackbar limite de Jours
-$tbJours = New-Object System.Windows.Forms.TrackBar
-$tbJours.Location = New-Object System.Drawing.Point(10,240)
-$tbJours.Size = New-Object System.Drawing.Size(180, 45)
-$tbJours.Maximum = 6
-$tbJours.Minimum = 1
-$tbJours.Value = 1
-$tbJours.TickFrequency = 2
-$Form.Controls.Add($tbJours)
+# trackbar limite de temps
+$tbTime = New-Object System.Windows.Forms.TrackBar
+$tbTime.Location = New-Object System.Drawing.Point(10,240)
+$tbTime.Size = New-Object System.Drawing.Size(180, 45)
+$tbTime.Maximum = 11
+$tbTime.Minimum = 0
+$tbTime.Value = $contentData.expire_after_duration
+$tbTime.TickFrequency = 2
+$Form.Controls.Add($tbTime)
 
 # bouton valider
 $btnValider = New-Object System.Windows.Forms.Button
 $btnValider.Text = "Valider"
-$btnValider.Location = New-Object System.Drawing.Point(300,400)
+$btnValider.Location = New-Object System.Drawing.Point(300,375)
 $btnValider.Size = New-Object System.Drawing.Size(80,30)
 $Form.Controls.Add($btnValider)
 
@@ -85,24 +104,22 @@ $tbVues.Add_Scroll({
     $lblVues.Text = "Limite de vues : " + $tbVues.Value
 })
 
-# paeil mais pour les jours
-$tbJours.Add_Scroll({
-    $lblJours.Text = "Limite de jours : " + $tbJours.Value
+# paeil mais pour time
+$tbTime.Add_Scroll({
+    $lblTime.Text = "Expiration du lien : " + $lblValuesTab[$tbTime.Value]
 })
 
 # logique bouton valider
 $btnValider.Add_Click({
-    $contentJSON = Get-Content -Raw -Path $dataJSONpath | ConvertFrom-Json
-    $contentJSON.expire_after_views = $tbVues.Value
-    $contentJSON.expire_after_days = $tbJours.Value
-    if ($txtPassphrase.Text = "") {
-        $contentJSON.passphrase = $null
+    $contentData.expire_after_views = $tbVues.Value
+    $contentData.expire_after_duration = $tbTime.Value
+    if ($chkPassphrase.Checked -eq $false) {
+        $contentData.passphrase = ""
     }
     else {
-        $contentJSON.passphrase = $txtPassphrase.Text
+        $contentData.passphrase = $txtPassphrase.Text
     }
-    # ajouter ici les autres genre passphrase, expire after days, etc
-    $contentJSON | ConvertTo-Json | Set-Content -Encoding utf8 -Path $dataJSONpath
+    $contentData | ConvertTo-Json | Set-Content -Encoding utf8 -Path $dataJSONpath
     $Form.Close()
 })
 
