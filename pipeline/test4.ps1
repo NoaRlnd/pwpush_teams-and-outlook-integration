@@ -1,10 +1,13 @@
-Write-Host "-----------------------------------"
-$txtSecret.Text = "ceci est un secret"
-$currentPath = $PSScriptRoot
 $basePath = Split-Path -Path $PSScriptRoot
-$mainPath = Join-Path $currentPath "\main.ps1"
-$secretJSONpath = Join-Path $basePath "\data\secret.json"
+$credentielJSONpath = Join-Path $basePath "\credentiel.json"
+$canWorkJSONpath = Join-Path $basePath "\ready.json"
+$contentJSONcred = Get-Content -Raw -Path $credentielJSONpath | ConvertFrom-Json
+$test = $contentJSONcred.APItoken
+$canWork = Get-Content -Raw -Path $canWorkJSONpath | ConvertFrom-Json
 
-$txtSecret.Text | ConvertTo-Json | Set-Content -Encoding utf8 -Path $secretJSONpath
-$payload = Get-Content -Raw -Path $secretJSONpath | ConvertFrom-Json
-Write-Host $payload
+if ($canWork.boot -eq $false) {
+    Write-Host "valid"
+}
+else {
+    Write-Host "not valisd"
+}

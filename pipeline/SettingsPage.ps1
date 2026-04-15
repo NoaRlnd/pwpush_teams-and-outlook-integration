@@ -7,6 +7,7 @@ $dataJSONpath = Join-Path $basePath "\data\data.json"
 
 $contentData = Get-Content -Raw -Path $dataJSONpath | ConvertFrom-Json
 
+$Script:keyIsModified = $false
 $lblValuesTab = @(
     '15 minutes'
     '30 minutes'
@@ -28,6 +29,9 @@ $Form.MaximizeBox = $false
 $Form.Text = "PWPush GUI - parametres"
 $Form.Size = New-Object System.Drawing.Size(700,450)
 $Form.StartPosition = "CenterParent" 
+
+$scrollBar = New-Object System.Windows.Forms.VScrollBar
+$scrollBar.Dock = [System.Windows.Forms.DockStyle]::Right
 
 # checkbox passphrase
 $chkPassphrase = New-Object System.Windows.Forms.CheckBox
@@ -86,6 +90,20 @@ $tbTime.Value = $contentData.expire_after_duration
 $tbTime.TickFrequency = 2
 $Form.Controls.Add($tbTime)
 
+#label clé api
+$lblAPIkey = New-Object System.Windows.Forms.Label
+$lblAPIkey.Text = "changer de clé API :"
+$lblAPIkey.Location = New-Object System.Drawing.Point(10,300)
+$lblAPIkey.Size = New-Object System.Drawing.Size(120,30)
+$Form.Controls.Add($lblAPIkey)
+
+# bouton changer clé API
+$btnAPIkey = New-Object System.Windows.Forms.Button
+$btnAPIkey.Text = "Changer"
+$btnAPIkey.Location = New-Object System.Drawing.Point(140,297)
+$btnAPIkey.Size = New-Object System.Drawing.Size(65,24)
+$Form.Controls.Add($btnAPIkey)
+
 # bouton valider
 $btnValider = New-Object System.Windows.Forms.Button
 $btnValider.Text = "Valider"
@@ -109,6 +127,20 @@ $tbTime.Add_Scroll({
     $lblTime.Text = "Expiration du lien : " + $lblValuesTab[$tbTime.Value]
 })
 
+# logique bouton clé API
+$btnAPIkey.Add_Click({
+    $popUp = [Microsoft.VisualBasic.Interaction]::InputBox("entrez votre token API", "Pop-up", "")
+    if ($popUp.length -lt 15 -or $popUp -match "\s") {
+        [System.Windows.Forms.MessageBox]::Show("veuillez remplir avec une vraie clé API, ou correctement")
+    }
+    else {
+        $Script:popUpItem = @{
+            "APItoken" = $popUp
+        }
+        $keyIsModified = $true
+    }
+})
+
 # logique bouton valider
 $btnValider.Add_Click({
     $contentData.expire_after_views = $tbVues.Value
@@ -118,6 +150,9 @@ $btnValider.Add_Click({
     }
     else {
         $contentData.passphrase = $txtPassphrase.Text
+    }
+    if ($keyIsModified = $true) {
+        $popUpItem | ConvertTo-Json | Set-Content -Encoding utf8 -Path $credentielJSONpath
     }
     $contentData | ConvertTo-Json | Set-Content -Encoding utf8 -Path $dataJSONpath
     $Form.Close()

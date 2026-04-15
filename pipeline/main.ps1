@@ -4,22 +4,30 @@ Add-Type -AssemblyName System.Drawing
 
 $currentPath = $PSScriptRoot
 $basePath = Split-Path -Path $PSScriptRoot
+$canWorkJSONpath = Join-Path $basePath "\ready.json"
 $dataJSONpath = Join-Path $basePath "\data\data.json"
 $testDataJSONpath = Join-Path $basePath "\data\testdata.json"
 $secretJSONpath = Join-Path $basePath "\data\secret.json"
-$visuelsPath = Join-Path $basePath "\visuels"
-$visuelsBGpath = Join-Path $visuelsPath "\arriere_plan_main.png"
-$visuelsCHMKpath = Join-Path $visuelsPath "\checkmark.png"
-$visuelsSTTGSpath = Join-Path $visuelsPath "\settings.png"
+$visuelsBGpath = Join-Path $basePath "\visuels\arriere_plan_main.png"
+$visuelsCHMKpath = Join-Path $basePath "\visuels\checkmark.png"
+$visuelsSTTGSpath = Join-Path $basePath "\visuels\settings.png"
 $pushPath = Join-Path $currentPath "\push.ps1"
-$mailPagePath = Join-Path $currentPath "\MailPage.ps1"
-$teamsPagePath = Join-Path $currentPath "\TeamsPage.ps1"
 $settingsPagePath = Join-Path $currentPath "\SettingsPage.ps1"
-$compteurJsonPath = Join-Path $basePath "\data\compteur.json"
+$bootTestPagePath = Join-Path $currentPath "\bootTest.ps1"
 
+$canWork = Get-Content -Raw -Path $canWorkJSONpath | ConvertFrom-Json
 $contentJSON = Get-Content -Raw -Path $dataJSONpath | ConvertFrom-Json
 $contentJSON.passphrase = ""
 $contentJSON | ConvertTo-Json | Set-Content -Encoding utf8 -Path $dataJSONpath
+
+if ($canWork.boot -eq $false) {
+    & $bootTestPagePath
+}
+if ($canWork.steps -lt 2) {
+    exit 32
+}
+
+$credentielJSONpath = Join-Path $basePath "\credentiel.json"
 
 $Form = New-Object System.Windows.Forms.Form
 $Form.FormBorderStyle = "FixedDialog"
@@ -52,35 +60,6 @@ $txtSecret = New-Object System.Windows.Forms.TextBox
 $txtSecret.Location = New-Object System.Drawing.Point(10,50)
 $txtSecret.Size = New-Object System.Drawing.Size(450,20)
 $Form.Controls.Add($txtSecret)
-
-# checkbox Teams
-$chkTeams = New-Object System.Windows.Forms.CheckBox
-$chkTeams.Text = "Envoi par Teams"
-$chkTeams.Location = New-Object System.Drawing.Point(10,90)
-$chkTeams.Size = New-Object System.Drawing.Size(130,20)
-$Form.Controls.Add($chkTeams)
-
-# bouton teams
-$btnTeams = New-Object System.Windows.Forms.Button
-$btnTeams.Text = "Configurer l'envoi par Teams"
-$btnTeams.Location = New-Object System.Drawing.Point(10,120)
-$btnTeams.Size = New-Object System.Drawing.Size(175,25)
-$btnTeams.Enabled = $false
-$Form.Controls.Add($btnTeams)
-
-# checkbox Mail
-$chkMail = New-Object System.Windows.Forms.CheckBox
-$chkMail.Text = "Envoi par mail"
-$chkMail.Location = New-Object System.Drawing.Point(10,160)
-$Form.Controls.Add($chkMail)
-
-# bouton mail
-$btnMail = New-Object System.Windows.Forms.Button
-$btnMail.Text = "Configurer l'envoi par email"
-$btnMail.Location = New-Object System.Drawing.Point(10,190)
-$btnMail.Size = New-Object System.Drawing.Size(175,25)
-$btnMail.Enabled = $false
-$Form.Controls.Add($btnMail)
 
 # bouton Générer
 $btnGenerate = New-Object System.Windows.Forms.Button
@@ -119,29 +98,9 @@ $timer.Add_Tick({
     $timer.Stop()
 })
 
-# enable/disable logique
-$chkTeams.Add_CheckedChanged({
-    $btnTeams.Enabled = $chkTeams.Checked
-})
-
-#pareil
-$chkMail.Add_CheckedChanged({
-    $btnMail.Enabled = $chkMail.Checked
-})
-
 # logique du bouton paramètres
 $btnSettings.Add_Click({
     & $settingsPagePath
-})
-
-# logique bouton teams
-$btnTeams.Add_Click({
-    & $mailPagePath
-})
-
-# Logique bouton Mail
-$btnMail.Add_Click({
-    & $teamsPagePath
 })
 
 #logique du bouton générer

@@ -13,7 +13,7 @@ if ($contentJSONdata.passphrase -eq "") {$passphrase = $null} else {$passphrase 
 $duree = $contentJSONdata.expire_after_duration
 
 $contentCredJSON = Get-Content -Raw -Path $credentielJSONpath | ConvertFrom-Json
-$token = $contentCredJSON
+$token = $contentCredJSON.APItoken
 
 
 $headers = @{
