@@ -5,8 +5,8 @@
 - avoir au moins powershell 5.1 (idéalement installer powershell 7)
 - créer un compte password pusher sur eu.pwpush.com
 - générer sa clé API depuis le site
-- installer les packages :
+- installer :
 
-> Install-Module -Name "Send-MailKitMessage"
+> dotnet (https://dotnet.microsoft.com/fr-fr/download)
 
-- renseigner les infos nécessaires dans l'exe de setup (mail, clé API PWPush)
+- renseigner la clé API dans le pop up qui apparait au lancement
